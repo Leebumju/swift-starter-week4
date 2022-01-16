@@ -31,14 +31,30 @@ struct Routine {
     var exerciseRountine: [Exercise] = [Exercise]()
     
     func startRoutine() {
-        print("-----------")
-        print("\(routineName)을 시작합니다.")
         for order in exerciseRountine {
             print("\(order.name)")
             order.action()
         }
-        print("-----------")
     }
+}
+
+struct Person {
+    var personName: String = ""
+    var personBodyCondition: BodyCondition = BodyCondition()
+    
+    func exercise(set: Int, routine: Routine){
+        print("\(routine.routineName)을 \(set)set 시작합니다.")
+        for _ in 1...set {
+            routine.startRoutine()
+        }
+    }
+}
+
+struct FitnessCenter {
+    var dreamOfBodyCondition: BodyCondition = BodyCondition()
+    var member: Person?
+    var hellRoutine: Routine = Routine(routineName: "hellRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
+    var ohMyGodRoutine: Routine = Routine(routineName: "ohMyGodRoutine", exerciseRountine: [squirt,squirt,run,run,activeRest,activeRest])
 }
 
 var myBodyCondition: BodyCondition = BodyCondition()
@@ -65,7 +81,70 @@ let activeRest: Exercise = Exercise(name: "동적휴식", action: {
 })
 
 var hellRoutine: Routine = Routine(routineName: "helloRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
-
+/*
 hellRoutine.startRoutine()
 
 myBodyCondition.showBodyCondition()
+*/
+
+var yagomFintnessCenter: FitnessCenter = FitnessCenter()
+
+print("안녕하세요. 야곰 피트니스 센터입니다. 회원님의 이름은 무엇인가요?")
+var registerPerson: Person = Person()
+var inputName: String? = readLine()
+
+if let name = inputName {
+    registerPerson.personName = name
+}
+//---------------------------------------------------------
+print("운동 목표치를 순서대로 알려주세요.")
+
+print("상체근력:")
+var inputUpperStrength: String? = readLine()
+
+if let inputNumber = inputUpperStrength {
+    let transferNumber: Int? = Int(inputNumber)
+    if let number = transferNumber {
+        yagomFintnessCenter.dreamOfBodyCondition.upperBodyStrength = number
+    }
+}
+
+print("하체근력:")
+var inputLowerStrength: String? = readLine()
+
+if let inputNumber = inputLowerStrength {
+    let transferNumber: Int? = Int(inputNumber)
+    if let number = transferNumber {
+        yagomFintnessCenter.dreamOfBodyCondition.lowerBodyStrength = number
+    }
+}
+
+print("근지구력:")
+var inputMuscularEndurance: String? = readLine()
+
+if let inputNumber = inputMuscularEndurance {
+    let transferNumber: Int? = Int(inputNumber)
+    if let number = transferNumber {
+        yagomFintnessCenter.dreamOfBodyCondition.muscularEndurance = number
+    }
+}
+
+print("\n설정한 목표 운동치")
+print("상체근력: \(yagomFintnessCenter.dreamOfBodyCondition.upperBodyStrength)")
+print("하체근력: \(yagomFintnessCenter.dreamOfBodyCondition.lowerBodyStrength)")
+print("근지구력: \(yagomFintnessCenter.dreamOfBodyCondition.muscularEndurance)")
+//---------------------------------------------------------
+print("\n몇 번째 루틴으로 운동하시겠어요?")
+print("1. hellRoutine")
+print("2. ohMyGodRoutine")
+
+var selectRoutine: String? = readLine()
+var selectSet: String? = readLine()
+
+//1이면 hellRoutine, 2이면 ohmyGodroutine
+if let mySet = selectSet {
+    let transferMySet: Int? = Int(mySet)
+    if let transferMySet = transferMySet {
+        registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine) //매개변수 routine부분 수정 필요
+    }
+}
