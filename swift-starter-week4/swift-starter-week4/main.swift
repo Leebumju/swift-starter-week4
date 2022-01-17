@@ -47,6 +47,7 @@ struct Person {
         for _ in 1...set {
             routine.startRoutine()
         }
+        print("\n")
     }
 }
 
@@ -139,12 +140,20 @@ print("1. hellRoutine")
 print("2. ohMyGodRoutine")
 
 var selectRoutine: String? = readLine()
+
+print("\n 몇 세트를 반복하시겠어요?")
 var selectSet: String? = readLine()
 
 //1이면 hellRoutine, 2이면 ohmyGodroutine
 if let mySet = selectSet {
     let transferMySet: Int? = Int(mySet)
     if let transferMySet = transferMySet {
-        registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine) //매개변수 routine부분 수정 필요
+        if selectRoutine == "1" {
+            registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
+        } else if selectRoutine == "2" {
+            registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
+        } else {
+            print("번호를 잘못 입력했습니다")
+        }
     }
 }
