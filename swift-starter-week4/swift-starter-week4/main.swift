@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct BodyCondition {
     var upperBodyStrength: Int = 0 //상체근력
     var lowerBodyStrength: Int = 0//하체근력
@@ -38,17 +39,38 @@ struct Routine {
     }
 }
 
+enum fitnessCenterError: Error {
+    case fullFatigue
+    case failDream
+    case wrongInput
+    case noRegisterPerson
+    case etc
+}
+
 struct Person {
     var personName: String = ""
     var personBodyCondition: BodyCondition = BodyCondition()
     
-    func exercise(set: Int, routine: Routine){
+    func exercise(set: Int, routine: Routine) throws {
         print("\(routine.routineName)을 \(set)set 시작합니다.")
+        guard self.personBodyCondition.fatigue < 100 else {
+            throw fitnessCenterError.fullFatigue
+        }
         for _ in 1...set {
             routine.startRoutine()
         }
         print("\n")
     }
+}
+
+var yagomFintnessCenter: FitnessCenter = FitnessCenter()
+
+print("안녕하세요. 야곰 피트니스 센터입니다. 회원님의 이름은 무엇인가요?")
+var registerPerson: Person = Person()
+var inputName: String? = readLine()
+
+if let name = inputName {
+    registerPerson.personName = name
 }
 
 struct FitnessCenter {
@@ -88,15 +110,7 @@ hellRoutine.startRoutine()
 myBodyCondition.showBodyCondition()
 */
 
-var yagomFintnessCenter: FitnessCenter = FitnessCenter()
 
-print("안녕하세요. 야곰 피트니스 센터입니다. 회원님의 이름은 무엇인가요?")
-var registerPerson: Person = Person()
-var inputName: String? = readLine()
-
-if let name = inputName {
-    registerPerson.personName = name
-}
 //---------------------------------------------------------
 print("운동 목표치를 순서대로 알려주세요.")
 
@@ -139,21 +153,68 @@ print("\n몇 번째 루틴으로 운동하시겠어요?")
 print("1. hellRoutine")
 print("2. ohMyGodRoutine")
 
-var selectRoutine: String? = readLine()
+var myRoutine: String? = readLine()
 
 print("\n 몇 세트를 반복하시겠어요?")
 var selectSet: String? = readLine()
 
 //1이면 hellRoutine, 2이면 ohmyGodroutine
-if let mySet = selectSet {
-    let transferMySet: Int? = Int(mySet)
-    if let transferMySet = transferMySet {
-        if selectRoutine == "1" {
-            registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
-        } else if selectRoutine == "2" {
-            registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
-        } else {
-            print("번호를 잘못 입력했습니다")
+func selectRoutine(selectSet: String?) throws {
+    guard myRoutine == "1" || myRoutine == "2" else {
+        throw fitnessCenterError.wrongInput
+    }
+    
+    guard selectSet != "0" else {
+        throw fitnessCenterError.wrongInput
+    }
+    
+    if let mySet = selectSet {
+        let transferMySet: Int? = Int(mySet)
+        if let transferMySet = transferMySet {
+            if myRoutine == "1" {
+                do {
+                    try registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
+                } catch fitnessCenterError.fullFatigue {
+                    print("피로도가 100이 넘어 회원이 도망쳤습니다.")
+                }
+            } else if myRoutine == "2" {
+                do {
+                    try registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
+                } catch fitnessCenterError.fullFatigue {
+                    print("피로도가 100이 넘어 회원이 도망쳤습니다.")
+                }
+            }
         }
     }
+    registerPerson.personBodyCondition = myBodyCondition
+    registerPerson.personBodyCondition.showBodyCondition()
 }
+
+do{
+    try selectRoutine(selectSet: selectSet)
+} catch fitnessCenterError.wrongInput {
+    print("입력값을 확인해주세요")
+}
+
+//성공입니다! 현재 야곰님의 컨디션은 다음과 같습니다.
+/*상체근력: 120
+하체근력: 80
+근지구력: 90
+피로도: 80
+
+
+    func selectRoutine(selectSet: String?) {
+        if let mySet = selectSet {
+            let transferMySet: Int? = Int(mySet)
+            if let transferMySet = transferMySet {
+                if selectRoutine == "1" {
+                    registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
+                } else if selectRoutine == "2" {
+                    registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
+                } else {
+                    print("번호를 잘못 입력했습니다")
+                }
+            }
+        }
+    }
+*/
