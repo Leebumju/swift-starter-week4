@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+//----------------------------------
 struct BodyCondition {
     var upperBodyStrength: Int = 0 //상체근력
     var lowerBodyStrength: Int = 0//하체근력
@@ -21,12 +21,12 @@ struct BodyCondition {
         print("피로도: \(fatigue)")
     }
 }
-
+//----------------------------------
 struct Exercise {
     let name: String
     let action: () -> Void
 }
-
+//----------------------------------
 struct Routine {
     var routineName: String
     var exerciseRountine: [Exercise] = [Exercise]()
@@ -38,7 +38,7 @@ struct Routine {
         }
     }
 }
-
+//----------------------------------
 enum fitnessCenterError: Error {
     case fullFatigue
     case failDream
@@ -46,23 +46,59 @@ enum fitnessCenterError: Error {
     case noRegisterPerson
     case etc
 }
-
+//----------------------------------
 struct Person {
     var personName: String = ""
     var personBodyCondition: BodyCondition = BodyCondition()
     
-    func exercise(set: Int, routine: Routine) throws {
+    func exercise(set: Int, routine: Routine) {
         print("\(routine.routineName)을 \(set)set 시작합니다.")
-        guard self.personBodyCondition.fatigue < 100 else {
-            throw fitnessCenterError.fullFatigue
-        }
         for _ in 1...set {
             routine.startRoutine()
         }
+     /*   guard self.personBodyCondition.fatigue > 100 else {
+            throw fitnessCenterError.fullFatigue
+        }*/
         print("\n")
     }
+    
+    func fatigueFull() throws {
+        guard self.personBodyCondition.fatigue < 100 else {
+            throw fitnessCenterError.fullFatigue
+        }
+    }
 }
+//----------------------------------
+struct FitnessCenter {
+    var dreamOfBodyCondition: BodyCondition = BodyCondition()
+    var member: Person?
+    var hellRoutine: Routine = Routine(routineName: "hellRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
+    var ohMyGodRoutine: Routine = Routine(routineName: "ohMyGodRoutine", exerciseRountine: [squirt,squirt,run,run,activeRest,activeRest])
+}
+//----------------------------------
 
+let situp: Exercise = Exercise(name: "윗몸일으키기", action: {
+    registerPerson.personBodyCondition.upperBodyStrength = registerPerson.personBodyCondition.upperBodyStrength + Int.random(in: 10...20)
+    registerPerson.personBodyCondition.fatigue = registerPerson.personBodyCondition.fatigue + Int.random(in: 10...20)
+})
+
+let squirt: Exercise = Exercise(name: "스쿼트", action: {
+    registerPerson.personBodyCondition.lowerBodyStrength = registerPerson.personBodyCondition.lowerBodyStrength + Int.random(in: 20...30)
+    registerPerson.personBodyCondition.fatigue = registerPerson.personBodyCondition.fatigue + Int.random(in: 10...20)
+})
+
+let run: Exercise = Exercise(name: "오래달리기", action: {
+    registerPerson.personBodyCondition.muscularEndurance = registerPerson.personBodyCondition.muscularEndurance + Int.random(in: 20...30)
+    registerPerson.personBodyCondition.upperBodyStrength = registerPerson.personBodyCondition.upperBodyStrength + Int.random(in: 5...10)
+    registerPerson.personBodyCondition.lowerBodyStrength = registerPerson.personBodyCondition.lowerBodyStrength + Int.random(in: 5...10)
+    registerPerson.personBodyCondition.fatigue = registerPerson.personBodyCondition.fatigue + Int.random(in: 20...30)
+})
+
+let activeRest: Exercise = Exercise(name: "동적휴식", action: {
+    registerPerson.personBodyCondition.fatigue = registerPerson.personBodyCondition.fatigue - Int.random(in: 5...10)
+})
+
+// -------------------------
 var yagomFintnessCenter: FitnessCenter = FitnessCenter()
 
 print("안녕하세요. 야곰 피트니스 센터입니다. 회원님의 이름은 무엇인가요?")
@@ -73,43 +109,19 @@ if let name = inputName {
     registerPerson.personName = name
 }
 
-struct FitnessCenter {
-    var dreamOfBodyCondition: BodyCondition = BodyCondition()
-    var member: Person?
-    var hellRoutine: Routine = Routine(routineName: "hellRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
-    var ohMyGodRoutine: Routine = Routine(routineName: "ohMyGodRoutine", exerciseRountine: [squirt,squirt,run,run,activeRest,activeRest])
-}
-
-var myBodyCondition: BodyCondition = BodyCondition()
-
-let situp: Exercise = Exercise(name: "윗몸일으키기", action: {
-    myBodyCondition.upperBodyStrength = myBodyCondition.upperBodyStrength + Int.random(in: 10...20)
-    myBodyCondition.fatigue = myBodyCondition.fatigue + Int.random(in: 10...20)
-})
-
-let squirt: Exercise = Exercise(name: "스쿼트", action: {
-    myBodyCondition.lowerBodyStrength = myBodyCondition.lowerBodyStrength + Int.random(in: 20...30)
-    myBodyCondition.fatigue = myBodyCondition.fatigue + Int.random(in: 10...20)
-})
-
-let run: Exercise = Exercise(name: "오래달리기", action: {
-    myBodyCondition.muscularEndurance = myBodyCondition.muscularEndurance + Int.random(in: 20...30)
-    myBodyCondition.upperBodyStrength = myBodyCondition.upperBodyStrength + Int.random(in: 5...10)
-    myBodyCondition.lowerBodyStrength = myBodyCondition.lowerBodyStrength + Int.random(in: 5...10)
-    myBodyCondition.fatigue = myBodyCondition.fatigue + Int.random(in: 20...30)
-})
-
-let activeRest: Exercise = Exercise(name: "동적휴식", action: {
-    myBodyCondition.fatigue = myBodyCondition.fatigue - Int.random(in: 5...10)
-})
-
 var hellRoutine: Routine = Routine(routineName: "helloRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
-/*
-hellRoutine.startRoutine()
 
-myBodyCondition.showBodyCondition()
-*/
-
+func completeDream(registerPerson: Person) throws {
+    guard registerPerson.personBodyCondition.upperBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.upperBodyStrength else {
+        throw fitnessCenterError.failDream
+    }
+    guard registerPerson.personBodyCondition.lowerBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.lowerBodyStrength else {
+        throw fitnessCenterError.failDream
+    }
+    guard registerPerson.personBodyCondition.muscularEndurance > yagomFintnessCenter.dreamOfBodyCondition.muscularEndurance else {
+        throw fitnessCenterError.failDream
+    }
+}
 
 //---------------------------------------------------------
 print("운동 목표치를 순서대로 알려주세요.")
@@ -172,23 +184,25 @@ func selectRoutine(selectSet: String?) throws {
         let transferMySet: Int? = Int(mySet)
         if let transferMySet = transferMySet {
             if myRoutine == "1" {
+                registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
                 do {
-                    try registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.hellRoutine)
+                    try registerPerson.fatigueFull()
                 } catch fitnessCenterError.fullFatigue {
                     print("피로도가 100이 넘어 회원이 도망쳤습니다.")
                 }
             } else if myRoutine == "2" {
+                registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
                 do {
-                    try registerPerson.exercise(set: transferMySet, routine: yagomFintnessCenter.ohMyGodRoutine)
+                    try registerPerson.fatigueFull()
                 } catch fitnessCenterError.fullFatigue {
                     print("피로도가 100이 넘어 회원이 도망쳤습니다.")
                 }
             }
         }
     }
-    registerPerson.personBodyCondition = myBodyCondition
     registerPerson.personBodyCondition.showBodyCondition()
 }
+
 
 do{
     try selectRoutine(selectSet: selectSet)
@@ -196,12 +210,16 @@ do{
     print("입력값을 확인해주세요")
 }
 
+do {
+    try completeDream(registerPerson: registerPerson)
+} catch fitnessCenterError.failDream {
+    print("목표치에 미달했습니다.")
+}
 //성공입니다! 현재 야곰님의 컨디션은 다음과 같습니다.
 /*상체근력: 120
 하체근력: 80
 근지구력: 90
 피로도: 80
-
 
     func selectRoutine(selectSet: String?) {
         if let mySet = selectSet {
