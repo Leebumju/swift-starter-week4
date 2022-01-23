@@ -51,6 +51,12 @@ struct Person {
     var personName: String = ""
     var personBodyCondition: BodyCondition = BodyCondition()
     
+    func noNamePerson() throws {
+        guard personName != "" else {
+            throw fitnessCenterError.noRegisterPerson
+        }
+    }
+    
     func exercise(set: Int, routine: Routine) {
         print("\(routine.routineName)을 \(set)set 시작합니다.")
         for _ in 1...set {
@@ -74,6 +80,37 @@ struct FitnessCenter {
     var member: Person?
     var hellRoutine: Routine = Routine(routineName: "hellRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
     var ohMyGodRoutine: Routine = Routine(routineName: "ohMyGodRoutine", exerciseRountine: [squirt,squirt,run,run,activeRest,activeRest])
+    
+    func checkMember(member: Person?) {
+        do {
+            try member?.noNamePerson()
+        } catch fitnessCenterError.noRegisterPerson {
+            print("사람이 없어요")
+            exit(0)
+        } catch {
+            print("some error")
+        }
+    }
+    
+    
+    func completeDream(member: Person?) throws {
+        if let existPerson = member {
+            guard existPerson.personBodyCondition.upperBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.upperBodyStrength else {
+                throw fitnessCenterError.failDream
+            }
+        }
+        if let existPerson = member {
+            guard existPerson.personBodyCondition.lowerBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.lowerBodyStrength else {
+                throw fitnessCenterError.failDream
+            }
+        }
+        if let existPerson = member {
+            guard existPerson.personBodyCondition.muscularEndurance > yagomFintnessCenter.dreamOfBodyCondition.muscularEndurance else {
+                throw fitnessCenterError.failDream
+            }
+        }
+    }
+    
 }
 //----------------------------------
 
@@ -109,19 +146,10 @@ if let name = inputName {
     registerPerson.personName = name
 }
 
+yagomFintnessCenter.checkMember(member: registerPerson)
+
 var hellRoutine: Routine = Routine(routineName: "helloRoutine", exerciseRountine: [situp,situp,activeRest,squirt,squirt,activeRest,run,run])
 
-func completeDream(registerPerson: Person) throws {
-    guard registerPerson.personBodyCondition.upperBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.upperBodyStrength else {
-        throw fitnessCenterError.failDream
-    }
-    guard registerPerson.personBodyCondition.lowerBodyStrength > yagomFintnessCenter.dreamOfBodyCondition.lowerBodyStrength else {
-        throw fitnessCenterError.failDream
-    }
-    guard registerPerson.personBodyCondition.muscularEndurance > yagomFintnessCenter.dreamOfBodyCondition.muscularEndurance else {
-        throw fitnessCenterError.failDream
-    }
-}
 
 //---------------------------------------------------------
 print("운동 목표치를 순서대로 알려주세요.")
@@ -211,7 +239,7 @@ do{
 }
 
 do {
-    try completeDream(registerPerson: registerPerson)
+    try yagomFintnessCenter.completeDream(member: registerPerson)
 } catch fitnessCenterError.failDream {
     print("목표치에 미달했습니다.")
 }
